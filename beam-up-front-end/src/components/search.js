@@ -3,6 +3,9 @@ import { getAllReposByOrg } from '../lib/api'
 
 function Search({ setRepos }) {
 
+    // search component containing only the search
+    // handling errors of search
+
     const [search, setSearch] = useState("")
 
     // test("octo-org")

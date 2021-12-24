@@ -1,17 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const axios = require("axios")
+const {getAllRepos} = require("../models/github")
 
-const test = async () => {
-    const response = await axios.get('https://api.github.com/orgs/octo-org/repos')
-        .catch((error) => { return ({ data: `${error}` }) })
-    console.log(response);
-    if (response.data) return (response.data)
-    else return (response)
-}
-
-router.get('/', async (req, res) => {
-    res.send(await test())
+router.get('/:org', async (req, res) => {
+    const org = req.params.org
+    // console.log(org);
+    const allRepos = await getAllRepos(org)
+    res.send(allRepos)
 })
 
 module.exports = router;

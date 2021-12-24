@@ -1,9 +1,9 @@
 import React from 'react'
 
-function Repository() {
+function Repository({ repo }) {
     return (
         <div>
-            Repository
+            <div>{`${repo.name}`}</div>
         </div>
     )
 }

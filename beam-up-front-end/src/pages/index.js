@@ -1,13 +1,19 @@
-import React from 'react'
-import { test } from '../lib/api'
+import React, { useState } from 'react'
+import Search from '../components/search'
+import Repository from "../components/repository"
 
 function Index() {
 
-    test()
+    const [repos, setRepos] = useState([])
 
     return (
         <div>
-            Index
+            <Search setRepos={setRepos}/>
+            {repos.length && repos.map((repo, index) => {
+                return (
+                    <Repository key={index} repo={repo}/>
+                )
+            })}
         </div>
     )
 }

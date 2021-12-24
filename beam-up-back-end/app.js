@@ -4,10 +4,11 @@ const cors = require('cors');
 const gitHub = require("./src/controllers/github");
 
 const app = express()
-const port = 5000
+const port = process.env.Port || 5000
 
 app.use(cors())
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }))
 
 const router = Router();
 

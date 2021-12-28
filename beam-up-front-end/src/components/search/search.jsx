@@ -1,17 +1,11 @@
 import React, { useEffect, useState } from 'react'
-// import { getAllReposByOrg } from '../lib/api'
-// import { useLocation } from "react-router-dom"
 
-function Search({ setRepos, handleClickOnOrg }) {
+function Search({ handleClickOnOrg }) {
 
     // search component containing only the search
     // handling errors of search
 
-    // let { search } = useLocation();
-
     const [orgName, setOrgName] = useState("")
-
-    // search.slice(6)
 
     return (
         <div>

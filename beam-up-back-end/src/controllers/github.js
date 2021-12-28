@@ -1,35 +1,34 @@
-const express = require("express");
-const router = express.Router();
-const { getAllRepos, getAllOrgs, getAccessToken} = require("../models/github")
+const axios = require("axios")
 
-router.get('/allOrgs', async (req, res) => {
-    const accessToken = req.query.accessToken
-    const allOrgs = await getAllOrgs(accessToken)
-    // console.log(allOrgs);
-    res.send(allOrgs)
-})
+const getAllRepos = async (req, res) => {
+    const {org} = req.params
+    const {accessToken} = req.query
+    // console.log("accessToken", accessToken);
+    const headers = { Authorization: `token ${accessToken}` }
+    const response = await axios.get(`https://api.github.com/orgs/${org}/repos?`, { headers: headers })
+        .catch((error) => { return ({ error: `${error}` }) })
+    if (response.data) res.send(response.data)
+    else res.status(500).send(`error: ${response}`)
+}
 
-router.post('/accessToken', async (req, res) => {
-    const code = req.body.code
+const getAllOrgs = async (req, res) => {
+    const {accessToken} = req.query
+    const headers = { Authorization: `token ${accessToken}` }
+    const organizationID = Math.random() * 90000000
+    const response = await axios.get(`https://api.github.com/organizations?since=${organizationID}`, { headers: headers })
+        .catch((error) => { return ({ error: `${error}` }) })
+    if (response.data) res.send(response.data)
+    else res.status(500).send(`error: ${response}`)
+}
+
+const getAccessToken = async (req, res) => {
+    const {code} = req.body
     // console.log(code);
-    const { access_token } = await getAccessToken(code)
-    // console.log(access_token);
-    res.send(access_token)
-})
+    const headers = { Accept: 'application/json' }
+    const response = await axios.post(`https://github.com/login/oauth/access_token?client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&code=${code}`, {}, { headers: headers })
+        .catch((error) => { return ({ error: `${error}` }) })
+    if (response.data) res.send(response.data)
+    else res.status(500).send(`error: ${response}`)
+}
 
-
-// keep this rout as last
-router.get('/:org', async (req, res) => {
-    const org = req.params.org
-    const accessToken = req.query.accessToken
-    // console.log(code);
-    const allRepos = await getAllRepos(accessToken, org)
-    // console.log(allRepos);
-    res.send(allRepos)
-})
-
-// rethink order of folders: controllers, routes, models, schemas
-// consider fetching all/many organizations and presenting them to user
-// consider implementing interactive search of organizations
-
-module.exports = router;
+module.exports = { getAllRepos, getAllOrgs, getAccessToken }

@@ -1,7 +1,8 @@
 const express = require("express");
 const Router = require("express");
 const cors = require('cors');
-const gitHub = require("./src/controllers/github");
+const gitHub = require("./src/routes/github");
+const mongoDB = require("./src/routes/mongoDB")
 require('dotenv').config()
 
 const app = express()
@@ -18,6 +19,7 @@ app.get('/', (req, res) => {
 const router = Router();
 
 router.use("/github", gitHub);
+router.use("/mongoDB", mongoDB)
 
 app.use("/api", router);
 

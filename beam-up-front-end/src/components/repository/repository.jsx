@@ -2,10 +2,11 @@ import React from 'react'
 import "./repository.css"
 import Card from "react-bootstrap/Card"
 
-function Repository({ repo, page, favorites }) {
+function Repository({ repo, page, addingToOrRemovingFromFavorites }) {
 
     // a simple card component showing basic information of the repo with a save to favorites button
     // make pretty
+    // when pressed needs to show a modal with more info and an option for adding a short description by the user
 
     return (
         <Card id="repo-card">
@@ -15,11 +16,9 @@ function Repository({ repo, page, favorites }) {
             <Card.Text>{repo.description}</Card.Text>
             <Card.Body>{repo.owner.login}</Card.Body>
             <Card.Footer>Language:{repo.language}</Card.Footer>
-            {
-                page === "home" ? <button onClick={() => favorites(repo)}>Save To Favorites</button>
-                : page === "favorites" ? <button onClick={() => favorites(repo)}>Remove From Favorites</button>
-                : <></>
-            }
+            <button onClick={() => addingToOrRemovingFromFavorites(repo)}>
+                {page === "home" ? "Save To Favorites" : page === "favorites" ? "Remove From Favorites" : ""}
+            </button>            
         </Card>
     )
 }

@@ -1,23 +1,28 @@
+import { useEffect, useState } from 'react';
 import './App.css';
+import Index from './pages/index';
 import Home from './pages/home/home';
 import Favorites from './pages/favorites/favorites';
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom"
-import { useEffect, useState } from 'react';
-import Entrance from './pages/entrance/entrance';
-import { addNewUser, getAccessToken, getAllOrgs, getUserByAccessToken, updateUser } from './lib/api';
+import { addNewUser, getAccessToken, getAllReposByOrg, getGitHubOrgs, getUserByAccessToken, updateUser } from './lib/api';
 import qs from "qs";
 import { createBrowserHistory } from "history";
 
 function App() {
 
-  // if logged in - transfer to index page
-  // if logged out - transfer to login page, presenting sign up and log in buttons that open a modal to enter the website
-  // console.log(process.env);
-
+  // fix favorites button
+  // work on CSS
+  // deploy
+  // consider implementing interactive search of organizations
+  // check responses from API calls, if it all makes sense, both to server and to github
+  // in addUser in the server, maybe send the user info back with the message, if user already exist
+  // consider changing api.js functions, they are quite repetitive
+  // when repo is pressed, it needs to show a modal with more info and an option for adding a short description by the user
 
   const [favorites, setFavorites] = useState([])
   const [accessToken, setAccessToken] = useState("")
-  const [allOrgs, setAllOrgs] = useState([])
+  const [gitHubOrgs, setGitHubOrgs] = useState([])
+  const [repos, setRepos] = useState([])
 
   const history = createBrowserHistory();
 
@@ -33,76 +38,64 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (accessToken) {
-      console.log(accessToken);
-      getInfoAfterRefresh(accessToken)
-    }
+    getInfoAfterRefresh(accessToken)
   }, [accessToken])
 
-  const getInfoAfterRefresh = async (accessToken) => {
-    const data = await getUserByAccessToken(accessToken)
-    if (typeof data === "object") {
-      if(!favorites.length) setFavorites(data.favorites)
-      if(!allOrgs.length) setAllOrgs(data.allOrgs)
-    }
-    else {
-      alert("refresh" + data)
-      console.log(data);
-    }
-  }
-
   const callGetAccessToken = async (code) => {
-    // console.log(code);
     const accessToken = await getAccessToken(code)
     if (typeof accessToken === "string") {
       setAccessToken(accessToken);
       history.push(`/home?accessToken=${accessToken}`)
-      callGetAllOrgs(accessToken)
+      callGetGitHubOrgs(accessToken)
       addNewUser(accessToken)
     }
-    else {
-      alert("token" + accessToken)
-      console.log(accessToken);
-    }
+    else alert("token" + accessToken)
   }
 
-  const callGetAllOrgs = async (accessToken) => {
-    if (accessToken) {
-      // console.log(accessToken);
-      const allOrgs = await getAllOrgs(accessToken)
-      if (typeof allOrgs === "string") {
-        alert("orgs" + allOrgs)
-      }
-      else {
-        // console.log(allOrgs);
-        setAllOrgs(allOrgs);
-        callUpdateUser(accessToken, {allOrgs, favorites})
-      }
+  const getInfoAfterRefresh = async (accessToken) => {
+    const data = await getUserByAccessToken(accessToken)
+    if (typeof data === "object") {
+      if (data.favorites) setFavorites(data.favorites)
+      if (data.gitHubOrgs) setGitHubOrgs(data.gitHubOrgs)
+      if (data.repos) setRepos(data.repos)
     }
+    else alert("refresh" + data)
   }
 
   const callUpdateUser = async (accessToken, update) => {
     const data = await updateUser(accessToken, update)
     if (typeof data === "object") {
-      if (!favorites.length) setFavorites(data.favorites)
-      if (!allOrgs.length) setAllOrgs(data.allOrgs)
+      if (data.favorites) setFavorites(data.favorites)
+      if (data.gitHubOrgs) setGitHubOrgs(data.gitHubOrgs)
+      if (data.repos) setRepos(data.repos)
     }
+    else alert("update" + data)
+  }
+
+  const callGetGitHubOrgs = async (accessToken) => {
+    const gitHubOrgs = await getGitHubOrgs(accessToken)
+    if (typeof gitHubOrgs === "string") alert("orgs" + gitHubOrgs)
     else {
-      alert("update" + data)
-      console.log(data);
+      setGitHubOrgs(gitHubOrgs);
+      callUpdateUser(accessToken, { gitHubOrgs: gitHubOrgs, favorites, repos })
     }
   }
 
-  // find better name
-  const addingToOrRemovingFromFavorites = (repo) => {
-    const newFavorites = favorites.filter(favorite => favorite.name !== repo.name)
+  const changeFavorites = (repo) => {
+    let newFavorites = favorites.filter(favorite => favorite.name !== repo.name)
     if (newFavorites.length === favorites.length) {
-      setFavorites([...favorites, repo])
-      updateUser(accessToken, { allOrgs, favorites: [...favorites, repo] })
+      newFavorites = [...favorites, repo]
     }
+    setFavorites(newFavorites)
+    callUpdateUser(accessToken, { gitHubOrgs, favorites: newFavorites, repos })
+  }
+
+  const callGetAllRepos = async (org) => {
+    const repos = await getAllReposByOrg(accessToken, org)
+    if (typeof repos === "string") alert("repos" + repos)
     else {
-      setFavorites(newFavorites)
-      updateUser(accessToken, { allOrgs, favorites: newFavorites })
+      setRepos(repos)
+      callUpdateUser(accessToken, { gitHubOrgs, favorites, repos: repos })
     }
   }
 
@@ -114,20 +107,27 @@ function App() {
             <>
               <Link to={`/home?accessToken=${accessToken}`}> Home </Link>
               <Link to={`/favorites?accessToken=${accessToken}`}>Favorites</Link>
+              {/* <Link to={"/"}>LogOut or something</Link>  */}
             </>
           }
         </nav>
         <Routes>
-          <Route path="/favorites" element={<Favorites favorites={favorites} addingToOrRemovingFromFavorites={addingToOrRemovingFromFavorites} />} />
-          <Route path='/home' element={<Home
-            addingToOrRemovingFromFavorites={addingToOrRemovingFromFavorites}
-            // setAccessToken={setAccessToken}
-            accessToken={accessToken}
-            // setAllOrgs={setAllOrgs}
-            allOrgs={allOrgs}
-            callGetAllOrgs={callGetAllOrgs}
+          <Route path="/favorites" element={<Favorites
+            favorites={favorites}
+            changeFavorites={changeFavorites}
           />} />
-          <Route path="/" element={<Entrance />} />
+
+          <Route path='/home' element={<Home
+            changeFavorites={changeFavorites}
+            accessToken={accessToken}
+            gitHubOrgs={gitHubOrgs}
+            favorites={favorites}
+            callGetGitHubOrgs={callGetGitHubOrgs}
+            callGetAllRepos={callGetAllRepos}
+            repos={repos}
+          />} />
+
+          <Route path="/" element={<Index />} />
         </Routes>
       </Router>
     </div>

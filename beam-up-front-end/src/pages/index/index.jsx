@@ -1,6 +1,6 @@
 import React from 'react'
 
-function Entrance() {
+function Index() {
     
     return (
         <div>
@@ -9,4 +9,4 @@ function Entrance() {
     )
 }
 
-export default Entrance
+export default Index

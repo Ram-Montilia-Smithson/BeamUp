@@ -3,7 +3,6 @@ const axios = require("axios")
 const getAllRepos = async (req, res) => {
     const {org} = req.params
     const {accessToken} = req.query
-    // console.log("accessToken", accessToken);
     const headers = { Authorization: `token ${accessToken}` }
     const response = await axios.get(`https://api.github.com/orgs/${org}/repos?`, { headers: headers })
         .catch((error) => { return ({ error: `${error}` }) })
@@ -11,7 +10,7 @@ const getAllRepos = async (req, res) => {
     else res.status(500).send(`error: ${response}`)
 }
 
-const getAllOrgs = async (req, res) => {
+const getOrgs = async (req, res) => {
     const {accessToken} = req.query
     const headers = { Authorization: `token ${accessToken}` }
     const organizationID = Math.random() * 90000000
@@ -23,7 +22,6 @@ const getAllOrgs = async (req, res) => {
 
 const getAccessToken = async (req, res) => {
     const {code} = req.body
-    // console.log(code);
     const headers = { Accept: 'application/json' }
     const response = await axios.post(`https://github.com/login/oauth/access_token?client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&code=${code}`, {}, { headers: headers })
         .catch((error) => { return ({ error: `${error}` }) })
@@ -31,4 +29,4 @@ const getAccessToken = async (req, res) => {
     else res.status(500).send(`error: ${response}`)
 }
 
-module.exports = { getAllRepos, getAllOrgs, getAccessToken }
+module.exports = { getAllRepos, getOrgs, getAccessToken }

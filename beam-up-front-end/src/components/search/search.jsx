@@ -1,9 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
-function Search({ handleClickOnOrg }) {
-
-    // search component containing only the search
-    // handling errors of search
+function Search({ callGetAllRepos }) {
 
     const [orgName, setOrgName] = useState("")
 
@@ -17,7 +14,7 @@ function Search({ handleClickOnOrg }) {
                 onChange={(e) => setOrgName(e.target.value)}
             />
             <button
-                onClick={() => handleClickOnOrg(orgName)}
+                onClick={() => callGetAllRepos(orgName)}
             >
                 search
             </button>

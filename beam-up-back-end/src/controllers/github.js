@@ -23,7 +23,7 @@ const getOrgs = async (req, res) => {
 const getAccessToken = async (req, res) => {
     const {code} = req.body
     const headers = { Accept: 'application/json' }
-    const response = await axios.post(`https://github.com/login/oauth/access_token?client_id=03fb6788f67e0b07e844&client_secret=3054c431bf6799269647a589a43a99828885598d&code=${code}`, {}, { headers: headers })
+    const response = await axios.post(`https://github.com/login/oauth/access_token?client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&code=${code}`, {}, { headers: headers })
         .catch((error) => { return ({ error: `${error}` }) })
     if (response.data) res.send(response.data)
     else res.status(500).send(`error: ${response}`)

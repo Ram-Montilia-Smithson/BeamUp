@@ -23,6 +23,6 @@ router.use("/mongoDB", mongoDB)
 
 app.use("/api", router);
 
-app.listen(port, () => {
+app.listen(port || 5000, () => {
     console.log(`Example app listening at http://localhost:${port}`)
 })

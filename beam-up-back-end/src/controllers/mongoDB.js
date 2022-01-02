@@ -1,7 +1,5 @@
-const { ObjectId } = require('mongodb');
-require("dotenv").config();
 const mongoose = require('mongoose');
-const uri = process.env.MONGO_URI;
+const uri = "mongodb+srv://Ram:Ct9!7HSWeE@npVB@cluster0.ezysc.mongodb.net/github?retryWrites=true&w=majority";
 const db = mongoose.connection;
 db.collection("users");
 

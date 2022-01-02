@@ -13,7 +13,7 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 app.get('/', (req, res) => {
-    res.send("Hello World!   Welcome to Ram Montilia Smithson's BeamUp home assignment server")
+    res.send("Hello World! Welcome to Ram Montilia Smithson's BeamUp home assignment server")
 })
 
 const router = Router();

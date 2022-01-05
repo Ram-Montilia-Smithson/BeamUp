@@ -1,38 +1,35 @@
 import React, { useState } from 'react'
-import "./organization.css"
 import Card from "react-bootstrap/Card"
 import Modal from "react-bootstrap/Modal"
 import Button from "react-bootstrap/Button"
 
 function Organization({ org, callGetAllRepos }) {
 
-    // add description to the Modal and not Card component and the image as well maybe link as well
-
     const [show, setShow] = useState(false);
-
-    const handleClose = () => {
-        console.log(show);
-        setShow(false)
-    };
+    const handleClose = () => setShow(false)
     const handleShow = () => setShow(true);
 
-    // const handleClick = () => {
-        // handleShow(true);
-        // callGetAllRepos(org.login)
-    // }
+    const handleClick = () => {
+        callGetAllRepos(org.login)
+        handleClose()
+    }
 
     return (
-        <Card style={{ width: '5rem' }} id="org-card" >
+        <Card>
             <Card.Text className='h6'>{org.login}</Card.Text>
-            <Card.Link href={org.url}> GitHub Link</Card.Link>
-            <button id='org-button' onClick={handleShow}> i </button>
-
+            <Button size='sm' className='m-auto rounded-circle' style={{ width: 30, height: 30 }} onClick={handleShow}>
+                i
+            </Button>
+            <Card.Link href={"https://github.com/" + org.login} target="_blank"> GitHub Link</Card.Link>
             <Modal size="sm" show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>{org.login}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body><img className='w-100' src={org.avatar_url} alt={org.login}/></Modal.Body>
-                {org.description &&<Modal.Footer> {org.description} </Modal.Footer>}
+                <Modal.Footer>
+                    <Button onClick={() => handleClick()}>Get Repos</Button>
+                    {org.description && <p>{org.description}</p>}
+                </Modal.Footer>
             </Modal>
         </Card>
     )

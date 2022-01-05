@@ -12,13 +12,12 @@ function App() {
 
   // fix favorites button
   // work on CSS
-  // deploy
+  // deploy front
   // consider implementing interactive search of organizations
   // check responses from API calls, if it all makes sense, both to server and to github
   // in addUser in the server, maybe send the user info back with the message, if user already exist
   // consider changing api.js functions, they are quite repetitive
-  // when repo is pressed, it needs to show a modal with more info and an option for adding a short description by the user
-  // mongo package is not in use
+  // when getting repos by org, changing orgs list to only that specific org
 
   const [favorites, setFavorites] = useState([])
   const [accessToken, setAccessToken] = useState("")
@@ -92,11 +91,14 @@ function App() {
   }
 
   const callGetAllRepos = async (org) => {
+    const gitHubOrg = await getGitHubOrgs(org)
+    if (gitHubOrg.error) alert(gitHubOrg.error)
+    else setGitHubOrgs([gitHubOrg])
     const repos = await getAllReposByOrg(accessToken, org)
     if (repos.error) alert(repos.error)
     else {
       setRepos(repos)
-      callUpdateUser(accessToken, { gitHubOrgs, favorites, repos: repos })
+      callUpdateUser(accessToken, { gitHubOrgs: [gitHubOrg], favorites, repos: repos })
     }
   }
 

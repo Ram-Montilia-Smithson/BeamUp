@@ -19,7 +19,7 @@ function App() {
   const [gitHubOrgs, setGitHubOrgs] = useState([])
   const [repos, setRepos] = useState([])
 
-  const history = createBrowserHistory();
+  const history = createBrowserHistory(); 
 
   useEffect(() => {
     const filterParams = history.location.search.substr(1);

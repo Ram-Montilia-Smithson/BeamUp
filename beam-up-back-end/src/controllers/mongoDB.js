@@ -1,5 +1,4 @@
-require("dotenv").config();
-const mongoose = require('mongoose');
+import mongoose from "mongoose"
 const uri = process.env.MONGO_URI;
 const db = mongoose.connection;
 db.collection("users");

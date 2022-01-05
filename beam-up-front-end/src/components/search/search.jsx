@@ -14,6 +14,7 @@ function Search({ callGetAllRepos }) {
                 onChange={(e) => setOrgName(e.target.value)}
             />
             <button
+                disabled={!orgName}
                 onClick={() => callGetAllRepos(orgName)}
             >
                 search

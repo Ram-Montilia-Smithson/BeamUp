@@ -18,6 +18,7 @@ function App() {
   // in addUser in the server, maybe send the user info back with the message, if user already exist
   // consider changing api.js functions, they are quite repetitive
   // when repo is pressed, it needs to show a modal with more info and an option for adding a short description by the user
+  // mongo package is not in use
 
   const [favorites, setFavorites] = useState([])
   const [accessToken, setAccessToken] = useState("")
@@ -43,38 +44,38 @@ function App() {
 
   const callGetAccessToken = async (code) => {
     const accessToken = await getAccessToken(code)
-    if (typeof accessToken === "string") {
+    if (accessToken.error) alert("token" + accessToken.error)
+    else {
       setAccessToken(accessToken);
       history.push(`/home?accessToken=${accessToken}`)
       callGetGitHubOrgs(accessToken)
       addNewUser(accessToken)
     }
-    else alert("token" + accessToken)
   }
 
   const getInfoAfterRefresh = async (accessToken) => {
     const data = await getUserByAccessToken(accessToken)
-    if (typeof data === "object") {
+    if (data.error) alert("refresh" + data.error)
+    else{
       if (data.favorites) setFavorites(data.favorites)
       if (data.gitHubOrgs) setGitHubOrgs(data.gitHubOrgs)
       if (data.repos) setRepos(data.repos)
     }
-    else alert("refresh" + data)
   }
 
   const callUpdateUser = async (accessToken, update) => {
     const data = await updateUser(accessToken, update)
-    if (typeof data === "object") {
+    if (data.error) alert("update" + data.error)
+    else { 
       if (data.favorites) setFavorites(data.favorites)
       if (data.gitHubOrgs) setGitHubOrgs(data.gitHubOrgs)
       if (data.repos) setRepos(data.repos)
     }
-    else alert("update" + data)
   }
 
   const callGetGitHubOrgs = async (accessToken) => {
     const gitHubOrgs = await getGitHubOrgs(accessToken)
-    if (typeof gitHubOrgs === "string") alert("orgs" + gitHubOrgs)
+    if (gitHubOrgs.error) alert(gitHubOrgs.error)
     else {
       setGitHubOrgs(gitHubOrgs);
       callUpdateUser(accessToken, { gitHubOrgs: gitHubOrgs, favorites, repos })
@@ -92,7 +93,7 @@ function App() {
 
   const callGetAllRepos = async (org) => {
     const repos = await getAllReposByOrg(accessToken, org)
-    if (typeof repos === "string") alert("repos" + repos)
+    if (repos.error) alert(repos.error)
     else {
       setRepos(repos)
       callUpdateUser(accessToken, { gitHubOrgs, favorites, repos: repos })

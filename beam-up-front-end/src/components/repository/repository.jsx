@@ -1,9 +1,14 @@
 import React from 'react'
 import "./repository.css"
 import Card from "react-bootstrap/Card"
-import { Link } from 'react-router-dom'
 
 function Repository({ repo, changeFavorites, page }) {
+
+    // const [comment, setComment] = useState("")
+
+    // const addDescription = () => {
+
+    // }
 
 
     return (

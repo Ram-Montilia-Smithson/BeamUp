@@ -1,4 +1,4 @@
-const axios = require("axios")
+import axios from "axios"
 
 const getAllRepos = async (req, res) => {
     const {org} = req.params
@@ -14,7 +14,7 @@ const getOrgs = async (req, res) => {
     const {accessToken} = req.query
     const headers = { Authorization: `token ${accessToken}` }
     const organizationID = Math.random() * 90000000
-    const response = await axios.get(`https://api.github.com/organizations?since=${organizationID}`, { headers: headers })
+    const response = await axios.get(`https://api.github.com/organizations?since=${organizationID}%per_page=10`, { headers: headers })
         .catch((error) => { return ({ error: `${error}` }) })
     if (response.data) res.send(response.data)
     else res.status(500).send(`error: ${response}`)

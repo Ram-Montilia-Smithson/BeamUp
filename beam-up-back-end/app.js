@@ -1,12 +1,13 @@
-const express = require("express");
-const Router = require("express");
-const cors = require('cors');
-const gitHub = require("./src/routes/github");
-const mongoDB = require("./src/routes/mongoDB")
-require('dotenv').config()
+import express from "express";
+import Router from "express";
+import cors from "cors";
+import gitHub from "./src/routes/github";
+import mongoDB from "./src/routes/mongoDB";
+import dotenv from 'dotenv'
+dotenv.config()
 
 const app = express()
-const port = process.env.PORT
+const port = process.env.PORT || 5000
 
 app.use(cors())
 app.use(express.json({ limit: '50mb' }));
@@ -23,6 +24,6 @@ router.use("/mongoDB", mongoDB)
 
 app.use("/api", router);
 
-app.listen(port || 5000, () => {
-    console.log(`Example app listening at http://localhost:${port}`)
+app.listen(port, () => {
+    console.log(`Example app listening at https://beam-up-back.herokuapp.com/:${port}`)
 })

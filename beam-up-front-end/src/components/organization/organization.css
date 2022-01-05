@@ -1,3 +1,17 @@
-#org-card:hover {
+#org-card{
+    /* width: fit-content;
+    max-width: 100px; */
+    /* margin: 10px; */
+    font-size: smaller;
+}
+
+#org-button:hover {
     cursor: pointer;
+}
+
+#org-button{
+    border-radius: 50px;
+    margin: auto;
+    width: 30px;
+    height: 30px;
 }

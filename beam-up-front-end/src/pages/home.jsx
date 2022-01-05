@@ -1,10 +1,9 @@
 import React from 'react'
-import "./home.css"
-import Search from '../../components/search/search'
-import Repository from "../../components/repository/repository"
-import Organization from '../../components/organization/organization'
+import Search from '../components/search'
+import Repository from "../components/repository"
+import Organization from '../components/organization'
 
-function Home({ changeFavorites, accessToken, gitHubOrgs, callGetGitHubOrgs, repos, callGetAllRepos }) {
+function Home({ favorites, changeFavorites, gitHubOrgs, accessToken, callGetGitHubOrgs, repos, callGetAllRepos }) {
 
     return (
         <div>
@@ -12,7 +11,7 @@ function Home({ changeFavorites, accessToken, gitHubOrgs, callGetGitHubOrgs, rep
             <h1>Orgs</h1>
             <button onClick={() => callGetGitHubOrgs(accessToken)}>Fetch Random GitHub Organizations</button>
             <div id="organizations">
-                {gitHubOrgs.length && gitHubOrgs.map(org => {
+                {gitHubOrgs.length ? gitHubOrgs.map(org => {
                     return (
                         <Organization
                             key={org.id}
@@ -20,20 +19,23 @@ function Home({ changeFavorites, accessToken, gitHubOrgs, callGetGitHubOrgs, rep
                             callGetAllRepos={callGetAllRepos}
                         />
                     )
-                })}
+                })
+                    : <></>}
             </div>
             <h1>Repos</h1>
             <div id="repositories">
-                {repos.length && repos.map(repo => {
+                {repos.length ? repos.map(repo => {
                     return (
                         <Repository
                             key={repo.id}
                             repo={repo}
                             changeFavorites={changeFavorites}
                             page={"home"}
+                            favorites={favorites}
                         />
                     )
-                })}
+                })
+                    : <></>}
             </div>
         </div>
     )

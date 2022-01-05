@@ -1,23 +1,18 @@
 import { useEffect, useState } from 'react';
 import './App.css';
-import Index from './pages/index';
-import Home from './pages/home/home';
-import Favorites from './pages/favorites/favorites';
+import Home from './pages/home';
+import Favorites from './pages/favorites';
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom"
 import { addNewUser, getAccessToken, getAllReposByOrg, getGitHubOrgs, getUserByAccessToken, updateUser } from './lib/api';
 import qs from "qs";
 import { createBrowserHistory } from "history";
+import Nav from "react-bootstrap/Nav"
+import Index from './pages';
+
 
 function App() {
 
-  // fix favorites button
-  // work on CSS
   // deploy front
-  // consider implementing interactive search of organizations
-  // check responses from API calls, if it all makes sense, both to server and to github
-  // in addUser in the server, maybe send the user info back with the message, if user already exist
-  // consider changing api.js functions, they are quite repetitive
-  // when getting repos by org, changing orgs list to only that specific org
 
   const [favorites, setFavorites] = useState([])
   const [accessToken, setAccessToken] = useState("")
@@ -35,27 +30,29 @@ function App() {
     if (filtersFromParams.accessToken) {
       setAccessToken(filtersFromParams.accessToken)
     }
-  }, []);
+  });
 
   useEffect(() => {
-    getInfoAfterRefresh(accessToken)
+    if (accessToken) getInfoAfterRefresh(accessToken)
   }, [accessToken])
 
   const callGetAccessToken = async (code) => {
     const accessToken = await getAccessToken(code)
-    if (accessToken.error) alert("token" + accessToken.error)
+    if (accessToken && accessToken.error) alert(accessToken.error)
+    else if (accessToken.noError) return
     else {
       setAccessToken(accessToken);
       history.push(`/home?accessToken=${accessToken}`)
       callGetGitHubOrgs(accessToken)
-      addNewUser(accessToken)
+      const newUser = await addNewUser(accessToken)
+      if (newUser && newUser.error) alert(newUser.error)
     }
   }
 
   const getInfoAfterRefresh = async (accessToken) => {
     const data = await getUserByAccessToken(accessToken)
-    if (data.error) alert("refresh" + data.error)
-    else{
+    if (data.error) alert(data.error)
+    else {
       if (data.favorites) setFavorites(data.favorites)
       if (data.gitHubOrgs) setGitHubOrgs(data.gitHubOrgs)
       if (data.repos) setRepos(data.repos)
@@ -64,20 +61,20 @@ function App() {
 
   const callUpdateUser = async (accessToken, update) => {
     const data = await updateUser(accessToken, update)
-    if (data.error) alert("update" + data.error)
-    else { 
+    if (data.error) alert(data.error)
+    else {
       if (data.favorites) setFavorites(data.favorites)
       if (data.gitHubOrgs) setGitHubOrgs(data.gitHubOrgs)
       if (data.repos) setRepos(data.repos)
     }
   }
 
-  const callGetGitHubOrgs = async (accessToken) => {
-    const gitHubOrgs = await getGitHubOrgs(accessToken)
+  const callGetGitHubOrgs = async (accessToken, org, newRepos) => {
+    const gitHubOrgs = await getGitHubOrgs(accessToken, org)
     if (gitHubOrgs.error) alert(gitHubOrgs.error)
     else {
       setGitHubOrgs(gitHubOrgs);
-      callUpdateUser(accessToken, { gitHubOrgs: gitHubOrgs, favorites, repos })
+      callUpdateUser(accessToken, { gitHubOrgs: gitHubOrgs, favorites, repos: newRepos ? newRepos : repos })
     }
   }
 
@@ -91,29 +88,30 @@ function App() {
   }
 
   const callGetAllRepos = async (org) => {
-    const gitHubOrg = await getGitHubOrgs(org)
-    if (gitHubOrg.error) alert(gitHubOrg.error)
-    else setGitHubOrgs([gitHubOrg])
     const repos = await getAllReposByOrg(accessToken, org)
     if (repos.error) alert(repos.error)
     else {
       setRepos(repos)
-      callUpdateUser(accessToken, { gitHubOrgs: [gitHubOrg], favorites, repos: repos })
+      callGetGitHubOrgs(accessToken, org, repos)
     }
   }
 
   return (
     <div className="App">
       <Router>
-        <nav>
-          {accessToken &&
-            <>
+        {accessToken &&
+          <Nav fill variant="tabs">
+            <Nav.Item>
               <Link to={`/home?accessToken=${accessToken}`}> Home </Link>
+            </Nav.Item>
+            <Nav.Item>
               <Link to={`/favorites?accessToken=${accessToken}`}>Favorites</Link>
-              {/* <Link to={"/"}>LogOut or something</Link>  */}
-            </>
-          }
-        </nav>
+            </Nav.Item>
+            <Nav.Item>
+              <Link onClick={() => setAccessToken("")} to={"/"}>LogOut</Link>
+            </Nav.Item>
+          </Nav>
+        }
         <Routes>
           <Route path="/favorites" element={<Favorites
             favorites={favorites}
@@ -121,6 +119,7 @@ function App() {
           />} />
 
           <Route path='/home' element={<Home
+            favorites={favorites}
             changeFavorites={changeFavorites}
             accessToken={accessToken}
             gitHubOrgs={gitHubOrgs}

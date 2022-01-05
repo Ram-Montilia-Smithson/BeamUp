@@ -1,4 +1,4 @@
-import axios from "axios"
+const axios = require("axios");
 
 const getAllRepos = async (req, res) => {
     const {org} = req.params

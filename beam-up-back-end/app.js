@@ -1,10 +1,11 @@
-import express from "express";
-import Router from "express";
-import cors from "cors";
-import gitHub from "./src/routes/github";
-import mongoDB from "./src/routes/mongoDB";
-import dotenv from 'dotenv'
-dotenv.config()
+
+const express = require('express');
+const Router = require('express');
+const cors = require('cors');
+require('dotenv').config();
+const gitHub = require("./src/routes/github");
+const mongoDB = require("./src/routes/mongoDB");
+
 
 const app = express()
 const port = process.env.PORT || 5000

@@ -15,6 +15,7 @@ const getOrgs = async (req, res) => {
     const headers = { Authorization: `token ${accessToken}` }
     let url = `https://api.github.com/organizations?since=${organizationID}&per_page=10`
     if (org) url = `https://api.github.com/orgs/${org}`
+    console.log(url);
     const organizationID = Math.random() * 90000000
     const response = await axios.get(url, { headers: headers })
         .catch((error) => { return ({ error: `${error}` }) })

@@ -11,9 +11,10 @@ export const getAllReposByOrg = async (accessToken, org) => {
 export const getGitHubOrgs = async (accessToken, org) => {
     let url = `https://beam-up-back.herokuapp.com/api/github/orgs?accessToken=${accessToken}`
     if (org) url += `&org=${org}`
+    console.log(url);
     const response = await axios.get(url)
         .catch((error) => { return ({ error: `${error}` }) })
-    if (response.data.length) return (response.data)
+    if (response.data && response.data.length) return (response.data)
     else return ({ error: "No organizations found" })
 }
 
